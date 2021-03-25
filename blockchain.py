@@ -1,0 +1,53 @@
+# Using https://www.activestate.com/blog/how-to-build-a-blockchain-in-python/
+# as a resources
+
+from hashlib import sha256
+import json
+from time import time
+
+class Block:
+    def __init__(self, index, transactions, timestamp, previous_hash=None, nonce=0):
+        self.index = index
+        self.transactions = transactions
+        self.timestamp = timestamp
+        self.previous_hash = previous_hash
+        self.nonce = nonce
+
+    def hash(self):
+        block_string = json.dumps(self.__dict__, sort_keys=True)
+        return sha256(block_string.encode()).hexdigest()
+
+class Blockchain:
+    def __init__(self):
+        self.unconfirmed_transactions = []
+        self.chain = []
+        self.create_genesis_block()
+
+    def create_genesis_block(self):
+        genesis_block = Block(0, [], time.time(), "0")
+        genesis_block.hash = genesis_block.hash()
+        self.chain.append(genesis_block)
+
+    @property
+    def last_block(self):
+        return self.chain[-1]
+
+    difficulty = 2
+    def proof_of_work(self, block):
+        computed_hash = block.hash()
+        while not computed_hash.startswith('0' * Blockchain.difficulty):
+            block.nonce += 1
+            computed_hash = block.hash()
+        return computed_hash
+
+def main():
+    b = Block(2,4,"10:02",145632)
+    #print(b.hash())
+    print(b.nonce)
+    bc = Blockchain()
+    #bc.
+    print(bc.proof_of_work(b))
+    print(b.nonce)
+
+if __name__ == "__main__":
+    main()
