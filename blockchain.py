@@ -42,7 +42,7 @@ class Blockchain:
 
 def main():
     b = Block(2,4,"10:02",145632)
-    #print(b.hash())
+    print(b.hash())
     print(b.nonce)
     bc = Blockchain()
     #bc.
