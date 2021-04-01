@@ -68,7 +68,6 @@ def main():
     print(b.hash())
     print(b.nonce)
     bc = Blockchain()
-    #bc.
     print(bc.proof_of_work(b))
     print(b.nonce)
 
