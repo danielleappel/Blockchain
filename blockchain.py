@@ -24,7 +24,7 @@ class Blockchain:
         self.create_genesis_block()
 
     def create_genesis_block(self):
-        genesis_block = Block(0, [], time.time(), "0")
+        genesis_block = Block(0, [], time(), "0")
         genesis_block.hash = genesis_block.hash()
         self.chain.append(genesis_block)
 
@@ -32,10 +32,24 @@ class Blockchain:
     def last_block(self):
         return self.chain[-1]
 
+    def add_block(self, block, proof):
+        previous_hash = self.last_block.hash
+
+        if previous_hash != block.previous_hash:
+            return False
+
+        if not self.is_valid_proof(block, proof):
+            return False
+
+        block.hash = proof
+        self.chain.append(block)
+        return True
+
     difficulty = 2
     def proof_of_work(self, block):
         computed_hash = block.hash()
         while not computed_hash.startswith('0' * Blockchain.difficulty):
+            print(computed_hash, "\n")
             block.nonce += 1
             computed_hash = block.hash()
         return computed_hash
@@ -55,7 +69,7 @@ class Blockchain:
     
         new_block = Block(index=last_block.index + 1,
                         transactions=self.unconfirmed_transactions,
-                        timestamp=time.time(),
+                        timestamp=time(),
                         previous_hash=last_block.hash)
     
         proof = self.proof_of_work(new_block)
@@ -68,8 +82,11 @@ def main():
     print(b.hash())
     print(b.nonce)
     bc = Blockchain()
-    print(bc.proof_of_work(b))
+    print(bc.add_block(b, bc.proof_of_work(b)))
+    print(bc.mine())
+    print(bc.chain)
     print(b.nonce)
 
 if __name__ == "__main__":
     main()
+    
