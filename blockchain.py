@@ -5,6 +5,9 @@ from hashlib import sha256
 import json
 from time import time
 
+from flask import Flask, request
+import requests
+
 class Block:
     def __init__(self, index, transactions, timestamp, previous_hash=None, nonce=0):
         self.index = index
@@ -16,6 +19,9 @@ class Block:
     def hash(self):
         block_string = json.dumps(self.__dict__, sort_keys=True)
         return sha256(block_string.encode()).hexdigest()
+
+    def __str__(self):
+        return json.dumps(self.__dict__, sort_keys=True)
 
 class Blockchain:
     def __init__(self):
@@ -49,7 +55,6 @@ class Blockchain:
     def proof_of_work(self, block):
         computed_hash = block.hash()
         while not computed_hash.startswith('0' * Blockchain.difficulty):
-            print(computed_hash, "\n")
             block.nonce += 1
             computed_hash = block.hash()
         return computed_hash
@@ -76,17 +81,34 @@ class Blockchain:
         self.add_block(new_block, proof)
         self.unconfirmed_transactions = []
         return new_block.index
-
-def main():
-    b = Block(2,4,"10:02",145632)
-    print(b.hash())
-    print(b.nonce)
-    bc = Blockchain()
-    print(bc.add_block(b, bc.proof_of_work(b)))
-    print(bc.mine())
-    print(bc.chain)
-    print(b.nonce)
-
-if __name__ == "__main__":
-    main()
     
+    def __str__(self):
+        return "".join([str(block) for block in self.chain])
+        
+
+app = Flask(__name__)
+blockchain = Blockchain()
+print(blockchain)
+
+park_place = Block(1, 
+                  "Joan bought Park Place from Molly for $400", 
+                  "Tue Feb 17 10:48:39 2021", 145632)
+park_place_proof = blockchain.proof_of_work(park_place)
+blockchain.add_block(park_place, park_place_proof)
+
+print(block for block in blockchain.chain)
+print(park_place)
+
+# In[41]:
+
+@app.route('/chain', methods=['GET'])
+def get_chain():
+    print(blockchain)
+    return str(blockchain)
+
+
+# In[45]:
+
+
+
+app.run(debug=True, port=5000)
