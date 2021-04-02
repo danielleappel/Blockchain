@@ -61,7 +61,7 @@ class Blockchain:
 
     def is_valid_proof(self, block, block_hash):
         return (block_hash.startswith('0' * Blockchain.difficulty) and
-                block_hash == block.compute_hash())
+                block_hash == block.hash())
 
     def add_new_transaction(self, transaction):
         self.unconfirmed_transactions.append(transaction)
@@ -88,23 +88,23 @@ class Blockchain:
 
 app = Flask(__name__)
 blockchain = Blockchain()
-print(blockchain)
+blockchain.add_new_transaction("Alex bought St. James Place from Meredith for $180")
+blockchain.mine()
 
-park_place = Block(1, 
-                  "Joan bought Park Place from Molly for $400", 
-                  "Tue Feb 17 10:48:39 2021", 145632)
-park_place_proof = blockchain.proof_of_work(park_place)
-blockchain.add_block(park_place, park_place_proof)
+blockchain.add_new_transaction("Joan bought Park Place from Molly for $400")
+blockchain.mine()
 
-print(block for block in blockchain.chain)
-print(park_place)
+blockchain.add_new_transaction("Levi bought Marvin Gardens from Bella for $210")
+blockchain.mine()
 
 # In[41]:
 
 @app.route('/chain', methods=['GET'])
 def get_chain():
-    print(blockchain)
-    return str(blockchain)
+    chain_data = ""
+    for block in blockchain.chain:
+        chain_data += str(block) + "\n\n"
+    return "length: " + str(len(blockchain.chain)) +  "\n\n" + chain_data 
 
 
 # In[45]:
