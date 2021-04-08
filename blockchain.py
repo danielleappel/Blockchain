@@ -1,5 +1,10 @@
-# Using https://www.activestate.com/blog/how-to-build-a-blockchain-in-python/
-# as a resources
+# This is my Python blockchain
+# Once its running, it can be queried from the command line
+# using curl https://ip_address_outputed/chain
+
+
+# I used https://www.activestate.com/blog/how-to-build-a-blockchain-in-python/
+# as a resource
 
 from hashlib import sha256
 import json
